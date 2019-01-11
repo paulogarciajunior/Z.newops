@@ -1,0 +1,73 @@
+package com.newops.regulacao;
+
+import com.newops.regulacao.negacao;
+import com.newops.regulacao.solicitacao;
+import com.newops.regulacao.evento;
+
+import java.lang.Number;
+
+rule "ValidandoIdade"
+	ruleflow-group "GrupoNegacoes"
+	dialect "mvel"
+	when
+	    S:solicitacao(autorizado==true)
+	    E:evento(true,vMin:idademin,vMax:idademax)
+	    not solicitacao(idade > vMin && < vMax)
+	    //S:solicitacao(idade==40)
+	    //E:evento(codigo==10014)
+	then
+		S.setAutorizado(false);
+		negacao fact0 = new negacao();
+		fact0.setCodigo(9999 );
+		fact0.setNegacao( "Idade do beneficiario fora do intervalo mínimo e máximo para o evento" );
+		insert( fact0 );
+		System.out.println("9999 Idade do beneficiario fora do intervalo mínimo e máximo para o evento\n");
+end
+
+rule "1001_NumeroDaCarteiraInvalido"
+	ruleflow-group "GrupoNegacoes"
+	dialect "mvel"
+	when
+	    S:solicitacao(id==0)
+	then
+		S.setAutorizado(false);
+		negacao fact0 = new negacao();
+		fact0.setCodigo( 1001 );
+		fact0.setNegacao( "Número da carteira inválido" );
+		insert( fact0 );
+		System.out.println('1001 Número da carteira inválido\n');
+end
+
+/*
+rule "1002_NumeroDoCartaoNacionalDeSaudeInvalido"
+	ruleflow-group "GrupoElegibilidade"
+	dialect "mvel"
+	when
+		solicitacao(cns == "")
+	then
+		negacao N = new negacao();
+		N.setCodigo(1002);
+		N.setNegacao("Número do cartão nacional de saúde inválido");
+		insertLogical( N );
+		System.out.println("1002 Número do cartão nacional de saúde inválido\n");
+end
+*/
+
+
+rule "EscreverNegacao"
+	ruleflow-group "EscreverNegacaoNoLOG"
+	dialect "mvel"
+	when
+		S: solicitacao()
+	then
+		//negacao fact0 = new negacao();
+		//fact0.setCodigo( 1001 );
+		//fact0.setNegacao( "Número da carteira inválido" );
+		//insert( fact0 );
+		System.out.println('PROCESSO ESCREVER NEGACAO NO LOG');
+		System.out.println('idade:' + S.getIdade());
+		System.out.println('Nome:' + S.getNome());
+		System.out.println('Status:' + S.getAutorizado()+'\n');
+end
+
+

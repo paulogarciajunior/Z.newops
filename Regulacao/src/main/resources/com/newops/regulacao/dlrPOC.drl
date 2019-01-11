@@ -1,0 +1,15 @@
+package com.newops.regulacao;
+
+rule "TestePOC"
+	dialect "mvel"
+	when
+		solicitacao(nome == "PAULO")
+	then
+		negacao N  = new negacao();
+		N.setCodigo(9999);
+		N.setNegacao("NEGACAO TESTE DE POC");
+		insertLogical( N );
+		System.out.println("EXECUTANDO TESTE DE POC COM SUCESSO");
+end
+
+
